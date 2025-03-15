@@ -21,6 +21,7 @@ public:
 	int menu();
 	void getParametros();
 	void comparacion();
+	void ordenacion(vector<string>& lineasArchivo, int contador = 1);
 	void estadisticas();
 	void argumentos();
 	void creditos();

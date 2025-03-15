@@ -126,6 +126,18 @@ bool Comparaciones::extraerLineasDeArchivos() {
 	return false;
 }
 
+void Comparaciones::argumentos() {
+	cout << "\n\x1b[96mARGUMENTOS: \n" << endl;
+	cout << "	\x1b[90m   Estricto: " << (this->isEstricto ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Ordenado: " << (this->isOrdenado ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m Insensible: " << (this->isInsensible ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90mEstadistica: " << (this->isEstadistica ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m Silencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Creditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Archivo1: \x1b[97m" << this->nombreArchivo1 << endl;
+	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl;
+}
+
 void Comparaciones::comparacion() {
 	//if (extraerLineasDeArchivos()) {
 		cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
@@ -140,16 +152,25 @@ void Comparaciones::comparacion() {
 	//}
 }
 
-void Comparaciones::argumentos() {
-	cout << "\n\x1b[96mARGUMENTOS: \n" << endl;
-	cout << "	\x1b[90m   Estricto: " << (this->isEstricto ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Ordenado: " << (this->isOrdenado ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m Insensible: " << (this->isInsensible ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mEstadistica: " << (this->isEstadistica ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m Silencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Creditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Archivo1: \x1b[97m" << this->nombreArchivo1 << endl;
-	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl;
+/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir ORGANIZACION una sola vez y
+se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro numero entonces no imprimira*/
+void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
+	int posicionEOF = 0;
+	if (contador == 1) {
+		cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
+		cout << "	\x1b[93mArchivo1: \x1b[0m\'desorden -> orden\'" << endl;
+		cout << "	\x1b[93mArchivo2: \x1b[0m\'desorden -> orden\'" << endl;
+	}
+	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
+		if (lineasArchivo[indice] == "EOF") {
+			posicionEOF = indice;
+			break;
+		}
+	}
+	if (posicionEOF == 0)
+		sort(lineasArchivo.begin(), lineasArchivo.end());
+	else
+		sort(lineasArchivo.begin(), (lineasArchivo.begin() + posicionEOF));
 }
 
 
@@ -194,8 +215,14 @@ void Comparaciones::getNumeroLineas_Caracteres(vector<string> lineasArchivo, int
 int Comparaciones::ejecucionPrograma() {
 	getParametros();
 	extraerLineasDeArchivos();
+	
 	if (isEstadistica)
 		estadisticas();
+	else if (isOrdenado) {
+		ordenacion(lineas_archivo1);
+		ordenacion(lineas_archivo2,2);
+		comparacion();
+	}
 	//comparacion();
 	//creditos();
 	
