@@ -14,6 +14,7 @@ public:
 	Comparaciones(int argc, char* argv[]);
 	~Comparaciones();
 	void compararArchivos();
+	void extraerLineasDeArchivos();
 	int ejecucionPrograma();
 	void menu();
 };
