@@ -6,13 +6,14 @@
 // \x1b[91m = Rojo claro
 // \x1b[92m = Verde claro
 // \x1b[90m = Negro claro
+// \x1b[97m = Blanco claro
 
 Comparaciones::Comparaciones(int argc, char* argv[]) {
 	// empieza en 1 para no tomar en cuenta la direccion del proyecto
 	// y agarrar solo los comandos despues de la direccion
 	for (int indice = 1; indice < argc; indice++) {
 		parametros.push_back(argv[indice]);
-		cout << parametros[indice-1] << endl; // se resta 1 para que empiece en la posicion 0 ya que ahi es donde se guarda el primer comando
+		//cout << parametros[indice-1] << endl; // se resta 1 para que empiece en la posicion 0 ya que ahi es donde se guarda el primer comando
 	}
 
 	// sacar el nombre del ejecutable
@@ -33,7 +34,7 @@ Comparaciones::Comparaciones(int argc, char* argv[]) {
 	}
 }
 
-void Comparaciones::buscarArchivos() {
+void Comparaciones::getParametros() {
 	for (int indice = 0; indice < parametros.size(); indice++) {
 		if (parametros[indice] == "-e")
 			this->isEstricto = true;
@@ -66,7 +67,7 @@ void Comparaciones::buscarArchivos() {
 }
 
 int Comparaciones::menu() {
-	cout << "\x1b[96mUso:\x1b[0m " << this->nombreEjecutable << " \x1b[95m[opciones]\x1b[0m \x1b[93marchivo1 archivo2\x1b[0m\n" << endl;
+	cout << "\x1b[96mUso:\x1b[97m " << this->nombreEjecutable << " \x1b[95m[opciones]\x1b[0m \x1b[93marchivo1 archivo2\x1b[0m\n" << endl;
 	cout << "\x1b[96mEste programa compara \'\x1b[93marchivo1\x1b[96m\' y \'\x1b[93marchivo2\x1b[96m\'; linea por linea,\nmostrando las lineas donde se encuentran \x1b[91mdiferencias\x1b[96m o \x1b[92msimilitudes.\x1b[0m\n" << endl;
 	cout << "\x1b[95mOpciones:\x1b[0m\n" << endl;
 	cout << "\x1b[95m-h \x1b[96m: Muestra la lista de opciones del programa (esta pantalla)" << endl;
@@ -74,13 +75,12 @@ int Comparaciones::menu() {
 	cout << "\x1b[95m-s \x1b[96m: Modo ordenado (ordena el contenido antes de comparar) \x1b[93m(incompatible con '\x1b[95m-e\x1b[93m')" << endl;
 	cout << "\x1b[95m-i \x1b[96m: Modo insensible (ignora las diferencias entre mayusculas y minusculas)" << endl;
 	cout << "\x1b[95m-t \x1b[96m: Modo estadisticas (muestra el numero de lineas y caracteres) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')" << endl;
-	cout << "\x1b[95m-q \x1b[96m: Modo silencioso (no muestra las lineas que son iguales) \x1b[93m(incompatible con '\x1b[95m-t\x1b[93m')" << endl;
+	cout << "\x1b[95m-q \x1b[96m: Modo silencioso (no muestra las lineas que son iguales) \x1b[93m(incompatible con '\x1b[95m-t\x1b[93m' y '\x1b[95m-c\x1b[93m') " << endl;
 	cout << "\x1b[95m-c \x1b[96m: Modo creditos (muestra version de programa, compilador y autor) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')\x1b[0m" << endl;
 	return 0;
 }
 
 bool Comparaciones::extraerLineasDeArchivos() {
-	buscarArchivos();
 	if (!isMenu) {
 		string lineaTxt1, lineaTxt2;
 		ifstream archivo1(nombreArchivo1);
@@ -126,8 +126,8 @@ bool Comparaciones::extraerLineasDeArchivos() {
 	return false;
 }
 
-void Comparaciones::compararArchivos() {
-	if (extraerLineasDeArchivos()) {
+void Comparaciones::comparacion() {
+	//if (extraerLineasDeArchivos()) {
 		cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
 		for (int indice = 0; indice < lineas_archivo1.size(); indice++) {
 			if (lineas_archivo1[indice] == lineas_archivo2[indice])
@@ -137,40 +137,69 @@ void Comparaciones::compararArchivos() {
 		}
 		cout << endl;
 		// usar for para ambos archivos y comparar con los indices si son iguales o no las cadenas
-	}
-}
-
-int Comparaciones::ejecucionPrograma() {
-	compararArchivos();
-	//creditos();
-	return 0;
+	//}
 }
 
 void Comparaciones::argumentos() {
 	cout << "\n\x1b[96mARGUMENTOS: \n" << endl;
-	cout << "	\x1b[90mEstricto: " << (this->isEstricto ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mOrdenado: " << (this->isOrdenado ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mInsensible: " << (this->isInsensible ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Estricto: " << (this->isEstricto ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Ordenado: " << (this->isOrdenado ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m Insensible: " << (this->isInsensible ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
 	cout << "	\x1b[90mEstadistica: " << (this->isEstadistica ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mSilencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mCreditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mArchivo1: \x1b[0m" << this->nombreArchivo1 << endl;
-	cout << "	\x1b[90mArchivo2: \x1b[0m" << this->nombreArchivo2 << endl;
+	cout << "	\x1b[90m Silencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Creditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
+	cout << "	\x1b[90m   Archivo1: \x1b[97m" << this->nombreArchivo1 << endl;
+	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl;
+}
+
+
+void Comparaciones::estadisticas() {
+	cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
+	getNumeroLineas_Caracteres(lineas_archivo1, 0, 0);
+	cout << "	\x1b[90m Archivo 1: \x1b[92m" << this->nombreArchivo1 << endl;
+	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
+	cout << "	\x1b[90mCaracteres: \x1b[95m" << this->numeroCaracteres << '\n' << endl;
+
+	getNumeroLineas_Caracteres(lineas_archivo2, 0, 0);
+	cout << "	\x1b[90m Archivo 2: \x1b[92m" << this->nombreArchivo2 << endl;
+	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
+	cout << "	\x1b[90mCaracteres: \x1b[95m" << this->numeroCaracteres << "\x1b[0m" << endl;
 }
 
 void Comparaciones::creditos() {
 	cout << "\n\x1b[96mCREDITOS: \n" << endl;
-	cout << "	\x1b[90mPrograma: \x1b[92m" << nombreEjecutable << endl;
-	cout << "	\x1b[90mVersion: \x1b[93m 1.1" << endl;
-	cout << "	\x1b[90mProyecto: \x1b[95mProgramacion III - Parte I\n" << endl;
+	cout << "	\x1b[90m  Programa: \x1b[92m" << this->nombreEjecutable << endl;
+	cout << "	\x1b[90m   Version: \x1b[93m 1.1" << endl;
+	cout << "	\x1b[90m  Proyecto: \x1b[95mProgramacion III - Parte I\n" << endl;
 
-	cout << "	\x1b[90mLenguaje: \x1b[92mC++" << endl;
+	cout << "	\x1b[90m  Lenguaje: \x1b[92mC++" << endl;
 	cout << "	\x1b[90mCompilador: \x1b[93mMicrosoft Visual Studio Community 2022 (64 - bit)" << endl;
-	cout << "	\x1b[90mVersion: \x1b[95m17.13.0\n" << endl;
+	cout << "	\x1b[90m   Version: \x1b[95m17.13.0\n" << endl;
 
-	cout << "	\x1b[90mAutor: \x1b[92mDavid Castro" << endl;
-	cout << "	\x1b[90mCorreo: \x1b[93mdavid_castro@unitec.edu" << endl;
-	cout << "	\x1b[90mFecha: \x1b[95m2025-03-20\x1b[0m" << endl;
+	cout << "	\x1b[90m     Autor: \x1b[92mDavid Castro" << endl;
+	cout << "	\x1b[90m    Correo: \x1b[93mdavid_castro@unitec.edu" << endl;
+	cout << "	\x1b[90m     Fecha: \x1b[95m2025-03-20\x1b[0m" << endl;
+}
+
+void Comparaciones::getNumeroLineas_Caracteres(vector<string> lineasArchivo, int lineaInicial, size_t caracterInicial) {
+	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
+		if (!(lineasArchivo[indice] == "EOF")) {
+			this->numeroLineas = (lineaInicial+=1);
+			this->numeroCaracteres = (caracterInicial+=lineasArchivo[indice].size());
+		} else
+			break;
+	}
+}
+
+int Comparaciones::ejecucionPrograma() {
+	getParametros();
+	extraerLineasDeArchivos();
+	if (isEstadistica)
+		estadisticas();
+	//comparacion();
+	//creditos();
+	
+	return 0;
 }
 
 Comparaciones::~Comparaciones() {
