@@ -15,6 +15,7 @@ Comparaciones::Comparaciones(int argc, char* argv[]) {
 		parametros.push_back(argv[indice]);
 		//cout << parametros[indice-1] << endl; // se resta 1 para que empiece en la posicion 0 ya que ahi es donde se guarda el primer comando
 	}
+	insensible(parametros, 2);
 
 	// sacar el nombre del ejecutable
 	string ruta = argv[0];
@@ -36,34 +37,68 @@ Comparaciones::Comparaciones(int argc, char* argv[]) {
 
 void Comparaciones::getParametros() {
 	for (int indice = 0; indice < parametros.size(); indice++) {
-		if (parametros[indice] == "-e")
-			this->isEstricto = true;
-		else if (parametros[indice] == "-s")
-			this->isOrdenado = true;
-		else if (parametros[indice] == "-i")
-			this->isInsensible = true;
-		else if (parametros[indice] == "-t")
-			this->isEstadistica = true;
-		else if (parametros[indice] == "-q")
-			this->isSilencioso = true;
-		else if (parametros[indice] == "-c")
-			this->isCreditos = true;
-		else if (parametros[indice] == "-h"){
-			this->isMenu = true;
-			break;
-		} else {
-			if (contador == 1) {
-				this->nombreArchivo1 = parametros[indice];
-				this->contador++;
-			} else if (contador == 2) {
-				this->nombreArchivo2 = parametros[indice];
-				this->contador++;
+		if (parametros[indice][0] == '-') {
+			if (parametros[indice] == "-e")
+				this->isEstricto = true;
+			else if (parametros[indice] == "-s")
+				this->isOrdenado = true;
+			else if (parametros[indice] == "-i")
+				this->isInsensible = true;
+			else if (parametros[indice] == "-t")
+				this->isEstadistica = true;
+			else if (parametros[indice] == "-q")
+				this->isSilencioso = true;
+			else if (parametros[indice] == "-c")
+				this->isCreditos = true;
+			else if (parametros[indice] == "-h"){
+				this->isMenu = true;
+				this->isEstricto = false;
+				this->isEstadistica = false;
+				this->isCreditos = false;
+				this->isOrdenado = false;
+				this->isInsensible = false;
+				break;
 			} else {
 				this->isMenu = true;
+				this->retorno = 7;
+				break;
+			}
+		} else {
+			this->contador++;
+			if (this->contador == 1) {
+				this->nombreArchivo1 = parametros[indice];
+			} else if (this->contador == 2) {
+				this->nombreArchivo2 = parametros[indice];
+			} else { // este es el caso en que llega a mas de 2, significa que se encontraron mas de 2 archivos
 				break;
 			}
 		}
 	}
+
+	 if (this->contador < 2) {
+		 if (isCreditos) {
+			 creditos();
+			 this->isCreditos = false;
+		 } else if (isMenu) {
+			 this->retorno = 0;
+		 } else {
+			 this->retorno = 2;
+			 this->isMenu = true;
+		 }
+
+	} else if (this->contador > 2) {
+		this->retorno = 1;
+		this->isMenu = true;
+	} else if (isEstricto && isOrdenado) {
+		cout << "\x1b[91mModos 'estricto' y 'ordenado' son INCOMPATIBLES!\n\x1b[0m" << endl;
+		this->retorno = 3;
+		this->isMenu = true;
+	} else if (isSilencioso && (isEstadistica || isCreditos)) {
+		cout << "\x1b[91mModos 'silencioso' y 'estadistica' o 'creditos' son INCOMPATIBLES!\n\x1b[0m" << endl;
+		this->retorno = 4;
+		this->isMenu = true;
+	}
+	
 }
 
 int Comparaciones::menu() {
@@ -90,9 +125,11 @@ bool Comparaciones::extraerLineasDeArchivos() {
 			cout << "\x1b[91mNo encuentro el archivo1 (\'" << nombreArchivo1 << "\')!" << endl;
 			if (archivo2.fail())
 				cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
+			this->retorno = 5;
 		} else if (archivo2.fail()) {
 			//argumentos();
 			cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
+			this->retorno = 5;
 		} else {
 			//argumentos();
 			/*archivo.eof() devuelve true si se llego hasta el final del archivo y false si aun
@@ -148,13 +185,13 @@ void Comparaciones::comparacion() {
 		} else 
 			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
 	}
-	cout << endl;
+
 
 	if (contador == lineas_archivo1.size())
 		this->sonIguales = true;
 	else 
 		this->sonIguales = false;
-	//silencioso(posiciones, sonIguales);
+	conclusion();
 		
 }
 
@@ -163,7 +200,6 @@ se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro num
 void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
 	int posicionEOF = 0;
 	if (contador == 1) {
-		cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
 		cout << "	\x1b[93mArchivo1: \x1b[0m\'desorden -> orden\'" << endl;
 		cout << "	\x1b[93mArchivo2: \x1b[0m\'desorden -> orden\'" << endl;
 	}
@@ -179,12 +215,11 @@ void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
 		sort(lineasArchivo.begin(), (lineasArchivo.begin() + posicionEOF));
 }
 
-/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir CONVERSION una sola vez y
+/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir la informacion una sola vez y
 se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro numero entonces no imprimira*/
 void Comparaciones::insensible(vector<string>& lineasArchivo, int contador) {
 	string temporal;
 	if (contador == 1) {
-		cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
 		cout << "	\x1b[93mArchivo1: \x1b[0m\'mayusculas -> minusculas\'" << endl;
 		cout << "	\x1b[93mArchivo2: \x1b[0m\'mayusculas -> minusculas\'" << endl;
 	}
@@ -210,12 +245,12 @@ void Comparaciones::silencioso() {
 		this->sonIguales = false;
 		for (int indice = 0; indice < posiciones.size(); indice++) 
 			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[posiciones[indice]] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[posiciones[indice]] << "\'\x1b[0m" << endl;
-		//conclusion();
+		conclusion();
 	}
 }
 
 void Comparaciones::estadisticas() {
-	cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
+	//cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
 	getNumeroLineas_Caracteres(lineas_archivo1, 0, 0);
 	cout << "	\x1b[90m Archivo 1: \x1b[92m" << this->nombreArchivo1 << endl;
 	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
@@ -242,6 +277,17 @@ void Comparaciones::creditos() {
 	cout << "	\x1b[90m     Fecha: \x1b[95m2025-03-20\x1b[0m" << endl;
 }
 
+void Comparaciones::conclusion() {
+	cout << "\n\x1b[96mCONCLUSION: \n" << endl;
+	if (this->sonIguales) {
+		cout << "	\x1b[92mLos archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen el MISMO contenido!" << "\x1b[0m" << endl;
+		this->retorno = 0;
+	} else {
+		cout << "	\x1b[91mLos archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen DIFERENTE contenido!" << "\x1b[0m" << endl;
+		this->retorno = 6;
+	}
+}
+
 void Comparaciones::getNumeroLineas_Caracteres(vector<string> lineasArchivo, int lineaInicial, size_t caracterInicial) {
 	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
 		if (!(lineasArchivo[indice] == "EOF")) {
@@ -256,30 +302,85 @@ int Comparaciones::ejecucionPrograma() {
 	getParametros();
 	if (isSilencioso) {
 		extraerLineasDeArchivos();
-		silencioso();
-	} else if (!isMenu) {
-		argumentos();
-		extraerLineasDeArchivos();
-		if (isEstadistica)
-			estadisticas();
 		if (isOrdenado) {
-			ordenacion(lineas_archivo1);
-			ordenacion(lineas_archivo2,2);
-			comparacion();
+			ordenacion(lineas_archivo1, 2);
+			ordenacion(lineas_archivo2, 2);
 		}
 		if (isInsensible) {
+			insensible(lineas_archivo1, 2);
+			insensible(lineas_archivo2, 2);
+		}
+		silencioso();
+	} else if (!isMenu) {
+		if (!(this->contador < 2)) {
+			argumentos();
+			bool seExtrayo = extraerLineasDeArchivos();
+		
+			if (isInsensible) {
+				cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
+				insensible(lineas_archivo1);
+				insensible(lineas_archivo2,2);
+			}
+			
+			if (isOrdenado) {
+				cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
+				ordenacion(lineas_archivo1);
+				ordenacion(lineas_archivo2,2);
+			}
+
+			if (seExtrayo)
+				comparacion();
+			if (isEstadistica) {
+				cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
+				estadisticas();
+			}
+			if (isCreditos) {
+				//cout << "\n\x1b[96mCREDITOS: \n" << endl;
+				creditos();
+			}
+		}
+	} else
+		menu();
+	/*getParametros();
+	extraerLineasDeArchivos();
+	
+	if (!isMenu) {
+		argumentos();
+		if (isOrdenado) {
+			cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
+			ordenacion(lineas_archivo1);
+			ordenacion(lineas_archivo2, 2);
+		}
+		if (isInsensible) {
+			cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
 			insensible(lineas_archivo1);
 			insensible(lineas_archivo2, 2);
-			comparacion();
 		}
-	}
-	//extraerLineasDeArchivos();
-	
-		
-	//comparacion();
-	//creditos();
-	
-	return 0;
+		comparacion();
+		if (isEstadistica) {
+			cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
+			estadisticas();
+		}
+		if (isCreditos) {
+			cout << "\n\x1b[96mCREDITOS: \n" << endl;
+			creditos();
+		}
+	} else {
+		if (isOrdenado || isInsensible || isSilencioso) {
+			if (isOrdenado) {
+				ordenacion(lineas_archivo1, 2);
+				ordenacion(lineas_archivo2, 2);
+			}
+			if (isInsensible) {
+				insensible(lineas_archivo1,2);
+				insensible(lineas_archivo2, 2);
+			}
+			if (isSilencioso)
+				silencioso();
+		}
+	}*/
+
+	return this->retorno;
 }
 
 Comparaciones::~Comparaciones() {
