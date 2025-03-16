@@ -86,15 +86,15 @@ bool Comparaciones::extraerLineasDeArchivos() {
 		ifstream archivo1(nombreArchivo1);
 		ifstream archivo2(nombreArchivo2);
 		if (archivo1.fail()) {
-			argumentos();
+			//argumentos();
 			cout << "\x1b[91mNo encuentro el archivo1 (\'" << nombreArchivo1 << "\')!" << endl;
 			if (archivo2.fail())
 				cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 		} else if (archivo2.fail()) {
-			argumentos();
+			//argumentos();
 			cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 		} else {
-			argumentos();
+			//argumentos();
 			/*archivo.eof() devuelve true si se llego hasta el final del archivo y false si aun
 			no ha llegado al final. En el while se usa ! porque si no lo usamos entonces ambos
 			archivos.eof() devolveran false porque al principio no han llegado hasta el final del archivo
@@ -135,21 +135,27 @@ void Comparaciones::argumentos() {
 	cout << "	\x1b[90m Silencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
 	cout << "	\x1b[90m   Creditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
 	cout << "	\x1b[90m   Archivo1: \x1b[97m" << this->nombreArchivo1 << endl;
-	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl;
+	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl << endl;
 }
 
 void Comparaciones::comparacion() {
-	//if (extraerLineasDeArchivos()) {
-		cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
-		for (int indice = 0; indice < lineas_archivo1.size(); indice++) {
-			if (lineas_archivo1[indice] == lineas_archivo2[indice])
-				cout << "	\x1b[92m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' == " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
-			else
-				cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
-		}
-		cout << endl;
-		// usar for para ambos archivos y comparar con los indices si son iguales o no las cadenas
-	//}
+	int contador = 0;
+	cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
+	for (int indice = 0; indice < lineas_archivo1.size(); indice++) {
+		if (lineas_archivo1[indice] == lineas_archivo2[indice]) {
+			cout << "	\x1b[92m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' == " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
+			contador++;
+		} else 
+			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
+	}
+	cout << endl;
+
+	if (contador == lineas_archivo1.size())
+		this->sonIguales = true;
+	else 
+		this->sonIguales = false;
+	//silencioso(posiciones, sonIguales);
+		
 }
 
 /* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir ORGANIZACION una sola vez y
@@ -173,6 +179,40 @@ void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
 		sort(lineasArchivo.begin(), (lineasArchivo.begin() + posicionEOF));
 }
 
+/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir CONVERSION una sola vez y
+se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro numero entonces no imprimira*/
+void Comparaciones::insensible(vector<string>& lineasArchivo, int contador) {
+	string temporal;
+	if (contador == 1) {
+		cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
+		cout << "	\x1b[93mArchivo1: \x1b[0m\'mayusculas -> minusculas\'" << endl;
+		cout << "	\x1b[93mArchivo2: \x1b[0m\'mayusculas -> minusculas\'" << endl;
+	}
+	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
+		for (char letra : lineasArchivo[indice]) {
+			letra = tolower(letra);
+			temporal += letra;
+		}
+		lineasArchivo[indice] = temporal;
+		temporal = "";
+	}
+}
+
+void Comparaciones::silencioso() {
+	vector<int> posiciones;
+	for (int indice = 0; indice < lineas_archivo1.size(); indice++) {
+		if (lineas_archivo1[indice] != lineas_archivo2[indice]) 
+			posiciones.push_back(indice);
+	}
+
+	if (!posiciones.empty()) {
+		cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
+		this->sonIguales = false;
+		for (int indice = 0; indice < posiciones.size(); indice++) 
+			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[posiciones[indice]] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[posiciones[indice]] << "\'\x1b[0m" << endl;
+		//conclusion();
+	}
+}
 
 void Comparaciones::estadisticas() {
 	cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
@@ -214,15 +254,28 @@ void Comparaciones::getNumeroLineas_Caracteres(vector<string> lineasArchivo, int
 
 int Comparaciones::ejecucionPrograma() {
 	getParametros();
-	extraerLineasDeArchivos();
-	
-	if (isEstadistica)
-		estadisticas();
-	else if (isOrdenado) {
-		ordenacion(lineas_archivo1);
-		ordenacion(lineas_archivo2,2);
-		comparacion();
+	if (isSilencioso) {
+		extraerLineasDeArchivos();
+		silencioso();
+	} else if (!isMenu) {
+		argumentos();
+		extraerLineasDeArchivos();
+		if (isEstadistica)
+			estadisticas();
+		if (isOrdenado) {
+			ordenacion(lineas_archivo1);
+			ordenacion(lineas_archivo2,2);
+			comparacion();
+		}
+		if (isInsensible) {
+			insensible(lineas_archivo1);
+			insensible(lineas_archivo2, 2);
+			comparacion();
+		}
 	}
+	//extraerLineasDeArchivos();
+	
+		
 	//comparacion();
 	//creditos();
 	

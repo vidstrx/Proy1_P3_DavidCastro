@@ -14,7 +14,7 @@ class Comparaciones {
 	size_t numeroCaracteres = 0;
 	string nombreArchivo1, nombreArchivo2, nombreEjecutable;
 	bool isMenu = false, isEstricto = false, isOrdenado = false, isInsensible = false;
-	bool isEstadistica = false, isSilencioso = false, isCreditos = false;
+	bool isEstadistica = false, isSilencioso = false, isCreditos = false, sonIguales = false;
 public:
 	Comparaciones(int argc, char* argv[]);
 	~Comparaciones();
@@ -22,7 +22,9 @@ public:
 	void getParametros();
 	void comparacion();
 	void ordenacion(vector<string>& lineasArchivo, int contador = 1);
+	void insensible(vector<string>& lineasArchivo, int contador = 1);
 	void estadisticas();
+	void silencioso();
 	void argumentos();
 	void creditos();
 	// otros metodos de ayuda
