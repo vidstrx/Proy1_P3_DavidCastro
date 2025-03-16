@@ -18,7 +18,7 @@ class Comparaciones {
 public:
 	Comparaciones(int argc, char* argv[]);
 	~Comparaciones();
-	int menu();
+	void menu();
 	void getParametros();
 	void argumentos();
 	void comparacion();

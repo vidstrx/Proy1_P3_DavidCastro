@@ -11,10 +11,8 @@
 Comparaciones::Comparaciones(int argc, char* argv[]) {
 	// empieza en 1 para no tomar en cuenta la direccion del proyecto
 	// y agarrar solo los comandos despues de la direccion
-	for (int indice = 1; indice < argc; indice++) {
+	for (int indice = 1; indice < argc; indice++) 
 		parametros.push_back(argv[indice]);
-		//cout << parametros[indice-1] << endl; // se resta 1 para que empiece en la posicion 0 ya que ahi es donde se guarda el primer comando
-	}
 	insensible(parametros, 2);
 
 	// sacar el nombre del ejecutable
@@ -23,9 +21,8 @@ Comparaciones::Comparaciones(int argc, char* argv[]) {
 	// ciclo for para sacar el nombre del ejecutable desde el final de la ruta hasta que encuentre el primer '\'
 	for (size_t indice = ruta.size(); indice > 0; indice--) {
 		char letra = ruta[indice];
-		if (letra == '\\') {
+		if (letra == '\\') 
 			break;
-		}
 		temporal += letra; // guardar el nombre del ejecutable al reves temporalmente
 	}
 	// luego este ciclo for agrega las letras del nombre del ejecutable de forma correcta
@@ -85,7 +82,6 @@ void Comparaciones::getParametros() {
 			 this->retorno = 2;
 			 this->isMenu = true;
 		 }
-
 	} else if (this->contador > 2) {
 		this->retorno = 1;
 		this->isMenu = true;
@@ -98,10 +94,9 @@ void Comparaciones::getParametros() {
 		this->retorno = 4;
 		this->isMenu = true;
 	}
-	
 }
 
-int Comparaciones::menu() {
+void Comparaciones::menu() {
 	cout << "\x1b[96mUso:\x1b[97m " << this->nombreEjecutable << " \x1b[95m[opciones]\x1b[0m \x1b[93marchivo1 archivo2\x1b[0m\n" << endl;
 	cout << "\x1b[96mEste programa compara \'\x1b[93marchivo1\x1b[96m\' y \'\x1b[93marchivo2\x1b[96m\'; linea por linea,\nmostrando las lineas donde se encuentran \x1b[91mdiferencias\x1b[96m o \x1b[92msimilitudes.\x1b[0m\n" << endl;
 	cout << "\x1b[95mOpciones:\x1b[0m\n" << endl;
@@ -112,7 +107,6 @@ int Comparaciones::menu() {
 	cout << "\x1b[95m-t \x1b[96m: Modo estadisticas (muestra el numero de lineas y caracteres) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')" << endl;
 	cout << "\x1b[95m-q \x1b[96m: Modo silencioso (no muestra las lineas que son iguales) \x1b[93m(incompatible con '\x1b[95m-t\x1b[93m' y '\x1b[95m-c\x1b[93m') " << endl;
 	cout << "\x1b[95m-c \x1b[96m: Modo creditos (muestra version de programa, compilador y autor) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')\x1b[0m" << endl;
-	return 0;
 }
 
 bool Comparaciones::extraerLineasDeArchivos() {
@@ -121,17 +115,14 @@ bool Comparaciones::extraerLineasDeArchivos() {
 		ifstream archivo1(nombreArchivo1);
 		ifstream archivo2(nombreArchivo2);
 		if (archivo1.fail()) {
-			//argumentos();
 			cout << "\x1b[91mNo encuentro el archivo1 (\'" << nombreArchivo1 << "\')!" << endl;
 			if (archivo2.fail())
 				cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 			this->retorno = 5;
 		} else if (archivo2.fail()) {
-			//argumentos();
 			cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 			this->retorno = 5;
 		} else {
-			//argumentos();
 			/*archivo.eof() devuelve true si se llego hasta el final del archivo y false si aun
 			no ha llegado al final. En el while se usa ! porque si no lo usamos entonces ambos
 			archivos.eof() devolveran false porque al principio no han llegado hasta el final del archivo
@@ -186,16 +177,14 @@ void Comparaciones::comparacion() {
 			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
 	}
 
-
 	if (contador == lineas_archivo1.size())
 		this->sonIguales = true;
 	else 
 		this->sonIguales = false;
-	conclusion();
-		
+	conclusion();		
 }
 
-/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir ORGANIZACION una sola vez y
+/* el contador de este metodo solo es para saber cuantas veces entro para poder imprimir la informacion una sola vez y
 se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro numero entonces no imprimira*/
 void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
 	int posicionEOF = 0;
@@ -250,7 +239,6 @@ void Comparaciones::silencioso() {
 }
 
 void Comparaciones::estadisticas() {
-	//cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
 	getNumeroLineas_Caracteres(lineas_archivo1, 0, 0);
 	cout << "	\x1b[90m Archivo 1: \x1b[92m" << this->nombreArchivo1 << endl;
 	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
@@ -334,55 +322,13 @@ int Comparaciones::ejecucionPrograma() {
 				cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
 				estadisticas();
 			}
-			if (isCreditos) {
-				//cout << "\n\x1b[96mCREDITOS: \n" << endl;
+			if (isCreditos) 
 				creditos();
-			}
 		}
 	} else
 		menu();
-	/*getParametros();
-	extraerLineasDeArchivos();
-	
-	if (!isMenu) {
-		argumentos();
-		if (isOrdenado) {
-			cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
-			ordenacion(lineas_archivo1);
-			ordenacion(lineas_archivo2, 2);
-		}
-		if (isInsensible) {
-			cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
-			insensible(lineas_archivo1);
-			insensible(lineas_archivo2, 2);
-		}
-		comparacion();
-		if (isEstadistica) {
-			cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
-			estadisticas();
-		}
-		if (isCreditos) {
-			cout << "\n\x1b[96mCREDITOS: \n" << endl;
-			creditos();
-		}
-	} else {
-		if (isOrdenado || isInsensible || isSilencioso) {
-			if (isOrdenado) {
-				ordenacion(lineas_archivo1, 2);
-				ordenacion(lineas_archivo2, 2);
-			}
-			if (isInsensible) {
-				insensible(lineas_archivo1,2);
-				insensible(lineas_archivo2, 2);
-			}
-			if (isSilencioso)
-				silencioso();
-		}
-	}*/
-
 	return this->retorno;
 }
 
 Comparaciones::~Comparaciones() {
-
 }
