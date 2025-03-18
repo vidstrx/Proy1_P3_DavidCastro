@@ -35,19 +35,19 @@ Comparaciones::Comparaciones(int argc, char* argv[]) {
 void Comparaciones::getParametros() {
 	for (int indice = 0; indice < parametros.size(); indice++) {
 		if (parametros[indice][0] == '-') {
-			if (parametros[indice] == "-e")
+			if (parametros[indice].substr(0,2) == "-e")
 				this->isEstricto = true;
-			else if (parametros[indice] == "-s")
+			else if (parametros[indice].substr(0, 2) == "-s")
 				this->isOrdenado = true;
-			else if (parametros[indice] == "-i")
+			else if (parametros[indice].substr(0, 2) == "-i")
 				this->isInsensible = true;
-			else if (parametros[indice] == "-t")
+			else if (parametros[indice].substr(0, 2) == "-t")
 				this->isEstadistica = true;
-			else if (parametros[indice] == "-q")
+			else if (parametros[indice].substr(0, 2) == "-q")
 				this->isSilencioso = true;
-			else if (parametros[indice] == "-c")
+			else if (parametros[indice].substr(0, 2) == "-c")
 				this->isCreditos = true;
-			else if (parametros[indice] == "-h"){
+			else if (parametros[indice].substr(0, 2) == "-h"){
 				this->isMenu = true;
 				this->isEstricto = false;
 				this->isEstadistica = false;
@@ -119,9 +119,19 @@ bool Comparaciones::extraerLineasDeArchivos() {
 			if (archivo2.fail())
 				cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 			this->retorno = 5;
+			this->isEstricto = false;
+			this->isEstadistica = false;
+			this->isCreditos = false;
+			this->isOrdenado = false;
+			this->isInsensible = false;
 		} else if (archivo2.fail()) {
 			cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
 			this->retorno = 5;
+			this->isEstricto = false;
+			this->isEstadistica = false;
+			this->isCreditos = false;
+			this->isOrdenado = false;
+			this->isInsensible = false;
 		} else {
 			/*archivo.eof() devuelve true si se llego hasta el final del archivo y false si aun
 			no ha llegado al final. En el while se usa ! porque si no lo usamos entonces ambos
@@ -302,7 +312,7 @@ int Comparaciones::ejecucionPrograma() {
 	} else if (!isMenu) {
 		if (!(this->contador < 2)) {
 			argumentos();
-			bool seExtrayo = extraerLineasDeArchivos();
+			bool seExtrajo = extraerLineasDeArchivos();
 		
 			if (isInsensible) {
 				cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
@@ -316,7 +326,7 @@ int Comparaciones::ejecucionPrograma() {
 				ordenacion(lineas_archivo2,2);
 			}
 
-			if (seExtrayo)
+			if (seExtrajo)
 				comparacion();
 			if (isEstadistica) {
 				cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
