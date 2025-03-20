@@ -1,19 +1,18 @@
 #include "Comparaciones.h"
-// \x1b[96m = Cyan claro
-// \x1b[0m = color normal de terminal
-// \x1b[95m = Morado claro
-// \x1b[93m = Amarillo claro
-// \x1b[91m = Rojo claro
-// \x1b[92m = Verde claro
-// \x1b[90m = Negro claro
-// \x1b[97m = Blanco claro
+#define CYAN "\x1b[96m" // \x1b[96m = Cyan claro
+#define NORMAL "\x1b[0m" // \x1b[0m = color normal de terminal
+#define MORADO "\x1b[95m" // \x1b[95m = Morado claro
+#define AMARILLO "\x1b[93m" // \x1b[93m = Amarillo claro
+#define ROJO "\x1b[91m" // \x1b[91m = Rojo claro
+#define VERDE "\x1b[92m" // \x1b[92m = Verde claro
+#define GRIS "\x1b[90m" // \x1b[90m = Negro claro
+#define BLANCO "\x1b[97m" // \x1b[97m = Blanco claro
 
 Comparaciones::Comparaciones(int argc, char* argv[]) {
 	// empieza en 1 para no tomar en cuenta la direccion del proyecto
 	// y agarrar solo los comandos despues de la direccion
 	for (int indice = 1; indice < argc; indice++) 
 		parametros.push_back(argv[indice]);
-	insensible(parametros, 2);
 
 	// sacar el nombre del ejecutable
 	string ruta = argv[0];
@@ -72,41 +71,41 @@ void Comparaciones::getParametros() {
 		}
 	}
 
-	 if (this->contador < 2) {
+	if (this->contador < 2) {
 		 if (isCreditos) {
 			 creditos();
 			 this->isCreditos = false;
-		 } else if (isMenu) {
-			 this->retorno = 0;
-		 } else {
-			 this->retorno = 2;
-			 this->isMenu = true;
+		 } else if (parametros.size() <= 2 || parametros.size() > 2){
+			 if (!isMenu) {
+				 this->retorno = 2;
+				 this->isMenu = true;
+			 }
 		 }
 	} else if (this->contador > 2) {
 		this->retorno = 1;
 		this->isMenu = true;
 	} else if (isEstricto && isOrdenado) {
-		cout << "\x1b[91mModos 'estricto' y 'ordenado' son INCOMPATIBLES!\n\x1b[0m" << endl;
+		cout << ROJO "Modos 'estricto' y 'ordenado' son INCOMPATIBLES!" NORMAL << endl;
 		this->retorno = 3;
 		this->isMenu = true;
 	} else if (isSilencioso && (isEstadistica || isCreditos)) {
-		cout << "\x1b[91mModos 'silencioso' y 'estadistica' o 'creditos' son INCOMPATIBLES!\n\x1b[0m" << endl;
+		cout << ROJO "Modos 'silencioso' y 'estadistica' o 'creditos' son INCOMPATIBLES!\n" NORMAL << endl;
 		this->retorno = 4;
 		this->isMenu = true;
 	}
 }
 
 void Comparaciones::menu() {
-	cout << "\x1b[96mUso:\x1b[97m " << this->nombreEjecutable << " \x1b[95m[opciones]\x1b[0m \x1b[93marchivo1 archivo2\x1b[0m\n" << endl;
-	cout << "\x1b[96mEste programa compara \'\x1b[93marchivo1\x1b[96m\' y \'\x1b[93marchivo2\x1b[96m\'; linea por linea,\nmostrando las lineas donde se encuentran \x1b[91mdiferencias\x1b[96m o \x1b[92msimilitudes.\x1b[0m\n" << endl;
-	cout << "\x1b[95mOpciones:\x1b[0m\n" << endl;
-	cout << "\x1b[95m-h \x1b[96m: Muestra la lista de opciones del programa (esta pantalla)" << endl;
-	cout << "\x1b[95m-e \x1b[96m: Modo estricto (compara todo de forma inegra) \x1b[93m(incompatible con '\x1b[95m-s\x1b[93m')" << endl;
-	cout << "\x1b[95m-s \x1b[96m: Modo ordenado (ordena el contenido antes de comparar) \x1b[93m(incompatible con '\x1b[95m-e\x1b[93m')" << endl;
-	cout << "\x1b[95m-i \x1b[96m: Modo insensible (ignora las diferencias entre mayusculas y minusculas)" << endl;
-	cout << "\x1b[95m-t \x1b[96m: Modo estadisticas (muestra el numero de lineas y caracteres) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')" << endl;
-	cout << "\x1b[95m-q \x1b[96m: Modo silencioso (no muestra las lineas que son iguales) \x1b[93m(incompatible con '\x1b[95m-t\x1b[93m' y '\x1b[95m-c\x1b[93m') " << endl;
-	cout << "\x1b[95m-c \x1b[96m: Modo creditos (muestra version de programa, compilador y autor) \x1b[93m(incompatible con '\x1b[95m-q\x1b[93m')\x1b[0m" << endl;
+	cout << CYAN "Uso: " BLANCO << this->nombreEjecutable << MORADO " [opciones]" AMARILLO " archivo1 archivo2\n" NORMAL << endl;
+	cout << CYAN "Este programa compara \'" AMARILLO "archivo1" CYAN "\' y \'" AMARILLO "archivo2" CYAN "\'; linea por linea,\nmostrando las lineas donde se encuentran " ROJO "diferencias" CYAN " o " VERDE "similitudes.\n" NORMAL << endl;
+	cout << MORADO "Opciones:\x1b[0m\n" << endl;
+	cout << MORADO "-h " CYAN ": Muestra la lista de opciones del programa (esta pantalla)" << endl;
+	cout << MORADO "-e " CYAN ": Modo estricto (compara todo de forma inegra) " AMARILLO "(incompatible con '" MORADO "-s" AMARILLO "')" << endl;
+	cout << MORADO "-s " CYAN ": Modo ordenado (ordena el contenido antes de comparar) " AMARILLO "(incompatible con '" MORADO "-e" AMARILLO "')" << endl;
+	cout << MORADO "-i " CYAN ": Modo insensible (ignora las diferencias entre mayusculas y minusculas)" << endl;
+	cout << MORADO "-t " CYAN ": Modo estadisticas (muestra el numero de lineas y caracteres) " AMARILLO "(incompatible con '" MORADO "-q" AMARILLO "')" << endl;
+	cout << MORADO "-q " CYAN ": Modo silencioso (no muestra las lineas que son iguales) " AMARILLO "(incompatible con '" MORADO "-t" AMARILLO "' y '" MORADO "-c" AMARILLO "') " << endl;
+	cout << MORADO "-c " CYAN ": Modo creditos (muestra version de programa, compilador y autor) " AMARILLO "(incompatible con '" MORADO "-q" AMARILLO "')" NORMAL << endl;
 }
 
 bool Comparaciones::extraerLineasDeArchivos() {
@@ -115,9 +114,9 @@ bool Comparaciones::extraerLineasDeArchivos() {
 		ifstream archivo1(nombreArchivo1);
 		ifstream archivo2(nombreArchivo2);
 		if (archivo1.fail()) {
-			cout << "\x1b[91mNo encuentro el archivo1 (\'" << nombreArchivo1 << "\')!" << endl;
+			cout << ROJO "No encuentro el archivo1 (\'" << nombreArchivo1 << "\')!" NORMAL << endl;
 			if (archivo2.fail())
-				cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
+				cout << ROJO "No encuentro el archivo2 (\'" << nombreArchivo2 << "\')!" NORMAL << endl;
 			this->retorno = 5;
 			this->isEstricto = false;
 			this->isEstadistica = false;
@@ -125,7 +124,7 @@ bool Comparaciones::extraerLineasDeArchivos() {
 			this->isOrdenado = false;
 			this->isInsensible = false;
 		} else if (archivo2.fail()) {
-			cout << "\x1b[91mNo encuentro el archivo2 (\'" << nombreArchivo2 << "\')!\x1b[0m" << endl;
+			cout << ROJO "No encuentro el archivo2 (\'" << nombreArchivo2 << "\')!" NORMAL << endl;
 			this->retorno = 5;
 			this->isEstricto = false;
 			this->isEstadistica = false;
@@ -165,26 +164,26 @@ bool Comparaciones::extraerLineasDeArchivos() {
 }
 
 void Comparaciones::argumentos() {
-	cout << "\n\x1b[96mARGUMENTOS: \n" << endl;
-	cout << "	\x1b[90m   Estricto: " << (this->isEstricto ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Ordenado: " << (this->isOrdenado ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m Insensible: " << (this->isInsensible ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90mEstadistica: " << (this->isEstadistica ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m Silencioso: " << (this->isSilencioso ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Creditos: " << (this->isCreditos ? "\x1b[92mSI" : "\x1b[95mNO") << endl;
-	cout << "	\x1b[90m   Archivo1: \x1b[97m" << this->nombreArchivo1 << endl;
-	cout << "	\x1b[90m   Archivo2: \x1b[97m" << this->nombreArchivo2 << endl << endl;
+	cout << CYAN "\nARGUMENTOS: \n" << endl;
+	cout << GRIS   "	   Estricto: " << (this->isEstricto ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	   Ordenado: " << (this->isOrdenado ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	 Insensible: " << (this->isInsensible ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	Estadistica: " << (this->isEstadistica ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	 Silencioso: " << (this->isSilencioso ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	   Creditos: " << (this->isCreditos ? VERDE "SI" : MORADO "NO") << endl;
+	cout << GRIS   "	   Archivo1: " BLANCO << this->nombreArchivo1 << endl;
+	cout << GRIS   "	   Archivo2: " BLANCO << this->nombreArchivo2 << endl << endl;
 }
 
 void Comparaciones::comparacion() {
 	int contador = 0;
-	cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
+	cout << CYAN "\nCOMPARACION: \n" NORMAL << endl;
 	for (int indice = 0; indice < lineas_archivo1.size(); indice++) {
 		if (lineas_archivo1[indice] == lineas_archivo2[indice]) {
-			cout << "	\x1b[92m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' == " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
+			cout << VERDE "	" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' == " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'" NORMAL << endl;
 			contador++;
 		} else 
-			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'\x1b[0m" << endl;
+			cout << ROJO "	" << nombreArchivo1 << ": \'" << lineas_archivo1[indice] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[indice] << "\'" NORMAL << endl;
 	}
 
 	if (contador == lineas_archivo1.size())
@@ -199,8 +198,8 @@ se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro num
 void Comparaciones::ordenacion(vector<string>& lineasArchivo, int contador) {
 	int posicionEOF = 0;
 	if (contador == 1) {
-		cout << "	\x1b[93mArchivo1: \x1b[0m\'desorden -> orden\'" << endl;
-		cout << "	\x1b[93mArchivo2: \x1b[0m\'desorden -> orden\'" << endl;
+		cout << AMARILLO "	Archivo1: " NORMAL "\'desorden -> orden\'" << endl;
+		cout << AMARILLO "	Archivo2: " NORMAL "\'desorden -> orden\'" << endl;
 	}
 	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
 		if (lineasArchivo[indice] == "EOF") {
@@ -219,8 +218,8 @@ se deja por defecto el numero 1, osea si es 1 entonces imprimira, si es otro num
 void Comparaciones::insensible(vector<string>& lineasArchivo, int contador) {
 	string temporal;
 	if (contador == 1) {
-		cout << "	\x1b[93mArchivo1: \x1b[0m\'mayusculas -> minusculas\'" << endl;
-		cout << "	\x1b[93mArchivo2: \x1b[0m\'mayusculas -> minusculas\'" << endl;
+		cout << AMARILLO "	Archivo1: " NORMAL "\'mayusculas -> minusculas\'" << endl;
+		cout << AMARILLO "	Archivo2: " NORMAL "\'mayusculas -> minusculas\'" << endl;
 	}
 	for (int indice = 0; indice < lineasArchivo.size(); indice++) {
 		for (char letra : lineasArchivo[indice]) {
@@ -240,48 +239,48 @@ void Comparaciones::silencioso() {
 	}
 
 	if (!posiciones.empty()) {
-		cout << "\n\x1b[96mCOMPARACION: \x1b[0m\n" << endl;
+		cout << CYAN "\nCOMPARACION: \n" NORMAL << endl;
 		this->sonIguales = false;
 		for (int indice = 0; indice < posiciones.size(); indice++) 
-			cout << "	\x1b[91m" << nombreArchivo1 << ": \'" << lineas_archivo1[posiciones[indice]] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[posiciones[indice]] << "\'\x1b[0m" << endl;
+			cout << ROJO "	" << nombreArchivo1 << ": \'" << lineas_archivo1[posiciones[indice]] << "\' != " << nombreArchivo2 << ": \'" << lineas_archivo2[posiciones[indice]] << "\'" NORMAL << endl;
 		conclusion();
 	}
 }
 
 void Comparaciones::estadisticas() {
 	getNumeroLineas_Caracteres(lineas_archivo1, 0, 0);
-	cout << "	\x1b[90m Archivo 1: \x1b[92m" << this->nombreArchivo1 << endl;
-	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
-	cout << "	\x1b[90mCaracteres: \x1b[95m" << this->numeroCaracteres << '\n' << endl;
+	cout << GRIS "	 Archivo 1: " AMARILLO << this->nombreArchivo1 << endl;
+	cout << GRIS "	    Lineas: " VERDE << this->numeroLineas << endl;
+	cout << GRIS "	Caracteres: " MORADO << this->numeroCaracteres << '\n' << endl;
 
 	getNumeroLineas_Caracteres(lineas_archivo2, 0, 0);
-	cout << "	\x1b[90m Archivo 2: \x1b[92m" << this->nombreArchivo2 << endl;
-	cout << "	\x1b[90m    Lineas: \x1b[93m" << this->numeroLineas << endl;
-	cout << "	\x1b[90mCaracteres: \x1b[95m" << this->numeroCaracteres << "\x1b[0m" << endl;
+	cout << GRIS "	 Archivo 2: " AMARILLO << this->nombreArchivo2 << endl;
+	cout << GRIS "	    Lineas: " VERDE << this->numeroLineas << endl;
+	cout << GRIS "	Caracteres: " MORADO << this->numeroCaracteres << NORMAL << endl;
 }
 
 void Comparaciones::creditos() {
-	cout << "\n\x1b[96mCREDITOS: \n" << endl;
-	cout << "	\x1b[90m  Programa: \x1b[92m" << this->nombreEjecutable << endl;
-	cout << "	\x1b[90m   Version: \x1b[93m 1.1" << endl;
-	cout << "	\x1b[90m  Proyecto: \x1b[95mProgramacion III - Parte I\n" << endl;
+	cout << CYAN "\nCREDITOS: \n" << endl;
+	cout << GRIS "	  Programa: " VERDE << this->nombreEjecutable << endl;
+	cout << GRIS "	   Version: " AMARILLO "1.1" << endl;
+	cout << GRIS "	  Proyecto: " MORADO "Programacion III - Parte I\n" << endl;
 
-	cout << "	\x1b[90m  Lenguaje: \x1b[92mC++" << endl;
-	cout << "	\x1b[90mCompilador: \x1b[93mMicrosoft Visual Studio Community 2022 (64 - bit)" << endl;
-	cout << "	\x1b[90m   Version: \x1b[95m17.13.0\n" << endl;
+	cout << GRIS "	  Lenguaje: " VERDE "C++" << endl;
+	cout << GRIS "	Compilador: " AMARILLO "Microsoft Visual Studio Community 2022 (64 - bit)" << endl;
+	cout << GRIS "	   Version: " MORADO "17.13.0\n" << endl;
 
-	cout << "	\x1b[90m     Autor: \x1b[92mDavid Castro" << endl;
-	cout << "	\x1b[90m    Correo: \x1b[93mdavid_castro@unitec.edu" << endl;
-	cout << "	\x1b[90m     Fecha: \x1b[95m2025-03-20\x1b[0m" << endl;
+	cout << GRIS "	     Autor: " VERDE "David Castro" << endl;
+	cout << GRIS "	    Correo: " AMARILLO "david_castro@unitec.edu" << endl;
+	cout << GRIS "	     Fecha: " MORADO "2025-03-20\x1b[0m" << endl;
 }
 
 void Comparaciones::conclusion() {
-	cout << "\n\x1b[96mCONCLUSION: \n" << endl;
+	cout << CYAN "\nCONCLUSION: \n" << endl;
 	if (this->sonIguales) {
-		cout << "	\x1b[92mLos archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen el MISMO contenido!" << "\x1b[0m" << endl;
+		cout << VERDE "	Los archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen el MISMO contenido!" << NORMAL << endl;
 		this->retorno = 0;
 	} else {
-		cout << "	\x1b[91mLos archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen DIFERENTE contenido!" << "\x1b[0m" << endl;
+		cout << ROJO "	Los archivos '" << nombreArchivo1 << "' y '" << nombreArchivo2 << "' tienen DIFERENTE contenido!" << NORMAL << endl;
 		this->retorno = 6;
 	}
 }
@@ -315,13 +314,13 @@ int Comparaciones::ejecucionPrograma() {
 			bool seExtrajo = extraerLineasDeArchivos();
 		
 			if (isInsensible) {
-				cout << "\n\x1b[96mCONVERSION: \x1b[0m\n" << endl;
+				cout << CYAN "\nCONVERSION: \n" NORMAL << endl;
 				insensible(lineas_archivo1);
 				insensible(lineas_archivo2,2);
 			}
 			
 			if (isOrdenado) {
-				cout << "\n\x1b[96mORGANIZACION: \x1b[0m\n" << endl;
+				cout << CYAN "\nORGANIZACION: \n" NORMAL << endl;
 				ordenacion(lineas_archivo1);
 				ordenacion(lineas_archivo2,2);
 			}
@@ -329,7 +328,7 @@ int Comparaciones::ejecucionPrograma() {
 			if (seExtrajo)
 				comparacion();
 			if (isEstadistica) {
-				cout << "\n\x1b[96mESTADISTICAS: \n" << endl;
+				cout <<  CYAN "\nESTADISTICAS: \n" << endl;
 				estadisticas();
 			}
 			if (isCreditos) 
