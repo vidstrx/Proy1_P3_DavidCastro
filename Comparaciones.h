@@ -19,7 +19,7 @@ public:
 	Comparaciones(int argc, char* argv[]);
 	~Comparaciones();
 	void menu();
-	void getParametros();
+	void verificarParametros();
 	void argumentos();
 	void comparacion();
 	void ordenacion(vector<string>& lineasArchivo, int contador = 1);
